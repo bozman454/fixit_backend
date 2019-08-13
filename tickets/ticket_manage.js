@@ -7,7 +7,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({exended : false}));
 app.use((req,res,next)=>{
 	res.set('Access-Control-Allow-Origin', '*');
-	res.set('Access-Control-Allow-Headers','content-type');
+  res.set('Access-Control-Allow-Headers','content-type');
+  res.set('Access-Control-Allow-Methods','GET, POST, DELETE');
 	return next();
 });
 
@@ -20,6 +21,25 @@ const client = new Client({
 })
 
 client.connect()
+
+app.delete('/api/v1/tickets/:ticket_id', (req, expressres)=>{
+    const query = {text: 'DELETE FROM tickets WHERE ticket_id = $1',
+          values: [req.params.ticket_id]};
+          console.log(req);
+          client.query(query, (err, res) => {
+            if (err) {
+              console.log(err.stack)
+            } 
+            else {
+              console.log(res);
+              console.log("values deleted");
+              out ={success: 'true'};
+              expressres.status(200).send(out);
+            }
+          })      
+    
+});
+
 
 app.get('/api/v1/tickets', (req, expressres) => {
     client.query('SELECT * FROM tickets', (err, res) => {
