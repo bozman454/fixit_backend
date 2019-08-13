@@ -25,7 +25,6 @@ client.connect()
 app.delete('/api/v1/tickets/:ticket_id', (req, expressres)=>{
     const query = {text: 'DELETE FROM tickets WHERE ticket_id = $1',
           values: [req.params.ticket_id]};
-          console.log(req);
           client.query(query, (err, res) => {
             if (err) {
               console.log(err.stack)
@@ -55,6 +54,25 @@ app.get('/api/v1/tickets', (req, expressres) => {
           expressres.status(200).send(out);
         }
       })
+});
+
+
+app.post('/api/v1/tickets/editticket', (req, expressres) =>{
+    const query = {
+      text: 'UPDATE tickets SET customer_name = $1, assigned_technician = $2, device_model = $3, device_notes = $4, device_status = $5 WHERE ticket_id = $6',
+      values: [req.body.customer_name, req.body.assigned_technician,
+      req.body.device_model, req.body.device_notes, req.body.device_status,
+      req.body.ticket_id]
+    };
+    client.query(query, (err, res) => {
+        if(err){
+          console.log(err.stack)
+        }
+        else{
+          console.log("updating info");
+          expressres.status(200).send({success: "true"});  
+        }
+    })
 });
 
 app.post('/api/v1/tickets', (req, expressres) => {
